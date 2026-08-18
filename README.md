@@ -1,158 +1,211 @@
-<div align="center">
+# E-Commerce Customer Intelligence: RFM, Churn, Delivery Performance and Customer-Risk Analysis
 
-E-Commerce Customer Intelligence
+A PostgreSQL-based customer analytics project that integrates e-commerce transaction data, delivery performance, RFM segmentation, churn analysis, and customer-risk prioritisation to identify high-value customers, delivery-related retention risks, and actionable business opportunities.
 
-RFM Segmentation · Churn Analysis · Delivery Performance · Customer Risk
+## Project Overview
 
+This project investigates customer behaviour and operational delivery performance in an e-commerce environment using PostgreSQL.
 
+The analysis combines customer, order, product, category, order-item, and shipping data to understand customer value, purchasing behaviour, delivery delays, cancellations, churn risk, and delayed-sales exposure.
 
-</div>
+The workflow begins with raw e-commerce transaction and shipping data. The data is validated, normalised into relational PostgreSQL tables, and transformed into customer-level analytical views.
 
-A PostgreSQL analytics project that transforms e-commerce transaction and delivery data into practical insights for customer retention, service recovery, and operational-risk prioritisation.
+The project then applies RFM analysis to measure customer value, churn analysis to identify inactive and at-risk customers, and delivery-performance analysis to identify late-delivery and cancellation exposure.
 
-Project Overview
+The main business objective is to identify customer groups where poor delivery performance may place valuable revenue relationships at risk.
 
-E-commerce performance depends on more than sales alone. High-value customers can be lost when delivery delays, cancellations, and poor fulfilment experiences are not identified early.
+## Objectives
 
-This project analyses customer purchase behaviour, delivery performance, churn risk, and delayed-sales exposure using PostgreSQL. It provides a structured way to identify valuable customers, measure operational service risk, and support targeted retention actions.
+The major objectives of this project are:
 
-Business question: How can an e-commerce business protect customer value by identifying churn risk and delivery-related service failures before revenue is lost?
+Organise e-commerce transaction and shipping information into a structured PostgreSQL data model.
 
-Business Objectives
+Validate customer, order, product, shipping, and sales data before analysis.
 
-Segment customers using Recency, Frequency, and Monetary value (RFM).
+Identify valid purchases using completed and closed orders.
+
+Build an analytics-ready customer-order dataset.
+
+Calculate Recency, Frequency, and Monetary value for every customer.
+
+Segment customers using percentile-based RFM scoring.
 
 Identify customers who have churned and active customers approaching churn.
 
-Analyse the relationship between delivery delays, cancellations, and customer churn.
+Analyse late deliveries, delivery delays, and shipment cancellations.
 
-Quantify delayed-sales exposure across customer groups.
+Measure customer-level delayed-sales exposure.
 
-Prioritise high-risk customers for retention and service-recovery actions.
+Identify high-value customers with poor delivery experiences.
 
-Support data-driven customer-service and fulfilment decisions.
+Prioritise customer groups for retention, service recovery, and operational intervention.
 
-Technology Stack
+## End-to-End Workflow
 
-Technology
+```text
+E-Commerce Transaction and Shipping Data
+                    │
+                    ▼
+          PostgreSQL Data Preparation
+                    │
+                    ▼
+          Relational Table Normalisation
+                    │
+                    ▼
+          Data Quality Validation
+                    │
+                    ▼
+       Customer-Order Analysis Base
+                    │
+         ┌──────────┴──────────┐
+         │                     │
+         ▼                     ▼
+   RFM Customer Analysis   Delivery Performance Analysis
+         │                     │
+         ▼                     ▼
+ Customer Value Segments   Late Delivery and Cancellation Metrics
+         │                     │
+         └──────────┬──────────┘
+                    ▼
+          Churn and Retention Analysis
+                    │
+                    ▼
+       Customer-Risk Prioritisation
+                    │
+                    ▼
+       Business Recommendations
+```
 
-Usage in this project
+## Dataset
 
-PostgreSQL
+The project uses e-commerce transaction, product, customer, order, and shipping data.
 
-Data modelling, joins, views, CTEs, aggregation, percentile scoring, and SQL analysis
+The raw dataset contains order-level and order-item-level information, including customer location, product details, order status, sales value, shipping mode, delivery status, actual delivery duration, and scheduled delivery duration.
 
-pgAdmin
+The raw dataset is not included in this repository because it may contain sensitive fields and large transaction-level records.
 
-Query development, database management, and results validation
-
-GitHub Desktop
-
-Version control and repository publishing
-
-End-to-End Analytics Workflow
-
-flowchart TB
-    A["Local e-commerce source data"] --> B["Normalised PostgreSQL tables"]
-    B --> C["Data-quality validation"]
-    C --> D["Customer-order analysis base"]
-    D --> E["RFM segmentation"]
-    D --> F["Delivery-delay and cancellation analysis"]
-    E --> G["Churn and retention analysis"]
-    F --> G
-    G --> H["Customer-risk prioritisation"]
-    H --> I["Business recommendations"]
-
-Data Model
-
-The source data is normalised into six core PostgreSQL tables:
-
-Table
-
-Description
+The project uses the following core relational tables:
 
 customers
-
-Customer segment and geographic information
-
 orders
-
-Order-level transaction and location details
-
 order_items
-
-Product, quantity, sales, discount, and profit information
-
 products
-
-Product, price, department, and category attributes
-
 categories
-
-Product-category reference information
-
 shipping
 
-Shipping mode, delivery status, and delivery-duration information
+The analytical workflow is built from these normalised tables.
 
-The following analytical tables and views are then created:
+PostgreSQL Data Preparation
+
+### 1. Relational Data Model
+
+The raw data is organised into six primary PostgreSQL tables.
+
+Customers
+
+The customers table contains customer-level information such as customer segment and location attributes.
+
+Orders
+
+The orders table contains order identifiers, customer relationships, order dates, order status, market, and geographic order information.
+
+Order Items
+
+The order_items table contains product-level transaction details, including quantity, sales, discount, and profit information.
+
+Products
+
+The products table contains product, department, and product-category attributes.
+
+Categories
+
+The categories table contains product-category reference information.
+
+Shipping
+
+The shipping table contains shipping mode, delivery status, late-delivery risk, actual shipping days, and scheduled shipping days.
+
+### 2. Data Validation
+
+The project includes data-quality checks before customer analytics are performed.
+
+The validation process includes:
+
+Primary-key uniqueness checks
+
+Foreign-key relationship checks
+
+Missing-value analysis
+
+Duplicate-record checks
+
+Customer and order consistency checks
+
+Product and category consistency checks
+
+Invalid numeric-value checks
+
+Date-range validation
+
+Shipping-date validation
+
+Actual-versus-scheduled delivery validation
+
+Customer and order population reconciliation
+
+These checks ensure that the customer and delivery analysis is based on reliable, consistent data.
+
+### 3. Valid Purchase Identification
+
+A customer purchase is treated as valid only when the order status is:
+
+COMPLETE
+CLOSED
+
+Orders with statuses such as pending, processing, canceled, payment review, suspected fraud, or on hold are excluded from RFM and customer purchase analysis.
+
+The valid-purchase dataset is created through the following analytical objects:
 
 customer_order_base
 valid_customer_orders
-customer_rfm_base
-order_shipping_base
-customer_supply_chain_base
-customer_churn_analysis
 
-Methodology
+The customer_order_base table provides an analytics-ready order-item-level view of customer purchases, products, sales, and shipping information.
 
-1. Valid Purchase Identification
+Customer Value and RFM Analysis
 
-Only completed customer purchases are included in the RFM and churn analysis.
+### 4. RFM Metrics
 
-Valid purchase = Order status is COMPLETE or CLOSED
-
-2. Delivery Performance Analysis
-
-Delivery Delay = Actual Shipping Days − Scheduled Shipping Days
-
-Customer-level metrics include:
-
-Total orders
-
-Late orders
-
-Late-delivery rate
-
-Average delivery delay
-
-Maximum delivery delay
-
-Canceled orders
-
-Cancellation rate
-
-Actual versus scheduled shipping duration
-
-3. RFM Customer Segmentation
-
-RFM Metric
-
-Definition
+The project uses RFM analysis to measure customer value.
 
 Recency
 
-Days since a customer's most recent valid purchase
+Recency measures the number of days since a customer's most recent valid purchase.
+
+Recency = Analysis Date − Latest Valid Purchase Date
 
 Frequency
 
-Number of distinct valid orders placed by a customer
+Frequency measures the number of distinct valid orders placed by a customer.
 
-Monetary
+Frequency = Number of Distinct Valid Orders
 
-Total sales generated from valid purchases
+Monetary Value
 
-Percentile-based scoring assigns Recency, Frequency, and Monetary scores from 1 to 5. Customers are then grouped into meaningful segments such as:
+Monetary value measures the total sales generated by a customer through valid purchases.
+
+Monetary = Total Sales from Valid Purchases
+
+The customer-level RFM metrics are stored in:
+
+customer_rfm_base
+
+### 5. RFM Customer Segmentation
+
+Percentile-based scoring is used to assign Recency, Frequency, and Monetary scores from 1 to 5.
+
+The combined RFM score is used to classify customers into meaningful business segments.
+
+Key customer segments include:
 
 Champions
 
@@ -170,121 +223,358 @@ Hibernating
 
 Need Attention
 
-4. Churn Classification
+These segments help distinguish high-value active customers from inactive, vulnerable, and low-engagement customer groups.
 
-Customer Status
+Delivery Performance Analysis
 
-Definition
+### 6. Delivery Delay Calculation
 
-Active
+Delivery performance is measured by comparing actual shipping duration with scheduled shipping duration.
 
-Customer recency is 365 days or fewer
+Delivery Delay = Actual Shipping Days − Scheduled Shipping Days
 
-Churned
+The delivery analysis evaluates:
 
-Customer recency is greater than 365 days
+Actual shipping days
 
-5. Customer-Risk Prioritisation
+Scheduled shipping days
 
-Customer risk is evaluated using delivery-delay rate, severe-delay exposure, delayed-sales exposure, and order volume. This approach helps distinguish customers who are operationally vulnerable from those who require routine monitoring.
+Delivery delay
 
-Key Findings
+Delivery status
 
-Insight
+Late-delivery indicator
 
-Business Impact
+Shipment-cancellation indicator
 
-21.75% of customers are in the High Value / High Delay segment
+Customer-level late-delivery rate
 
-This group has approximately $4.99M in delayed-sales exposure
+Customer-level cancellation rate
 
-Only 6.69% of customers are Critical or High Risk
+Average delivery delay
 
-They account for approximately $1.70M in delayed-sales exposure
+Maximum delivery delay
 
-High-risk customers have extremely high delay rates
+The delivery-performance workflow uses:
 
-Proactive service recovery is required to protect customer value
+order_shipping_base
+customer_supply_chain_base
 
-Valuable active customers are approaching churn
+### 7. Customer-Level Delivery Metrics
 
-Retention campaigns can be targeted before customers become inactive
+Customer-level supply-chain metrics are calculated by aggregating order shipping information for each customer.
 
+The analysis calculates:
+
+Total Orders
+Late Orders
+Late-Delivery Rate
+Average Delivery Delay
+Maximum Delivery Delay
+Canceled Orders
+Cancellation Rate
+Average Actual Shipping Days
+Average Scheduled Shipping Days
+
+These metrics provide a direct view of the delivery experience associated with each customer relationship.
+
+Churn and Retention Analysis
+
+### 8. Churn Definition
+
+Customers are classified based on recency.
+
+Active Customer:  Recency is 365 days or fewer
+Churned Customer: Recency is greater than 365 days
+
+The churn analysis is combined with RFM and delivery-performance information in:
+
+customer_churn_analysis
+
+This integrated customer-level view includes:
+
+RFM metrics
+
+RFM scores
+
+RFM segment
+
+Churn status
+
+Total orders
+
+Late orders
+
+Late-delivery rate
+
+Average delivery delay
+
+Maximum delivery delay
+
+Canceled orders
+
+Cancellation rate
+
+Actual and scheduled shipping duration
+
+### 9. Retention Priority Analysis
+
+The project identifies active customers who are approaching churn and evaluates their customer value and delivery exposure.
+
+The retention-priority analysis focuses on customers with:
+
+High monetary value
+High delivery-delay exposure
+High cancellation exposure
+Recency close to the churn threshold
+
+This allows the business to identify customers who are still active but may require proactive retention action.
+
+Customer Segmentation and Risk Analysis
+
+### 10. Customer Value and Delay Segmentation
+
+Customers are segmented according to their sales value and delivery-delay rate.
+
+The segmentation creates four customer groups:
+
+High Value / High Delay
+High Value / Low Delay
+Low Value / High Delay
+Low Value / Low Delay
+
+This framework helps identify customers who are commercially valuable but operationally vulnerable.
+
+## Key Finding
+
+The High Value / High Delay segment represents:
+
+21.75% of customers
+Approximately $4.99M in delayed-sales exposure
+
+This segment is a major priority because it combines high customer value with consistently poor delivery performance.
+
+### 11. Customer-Risk Prioritisation
+
+Customer risk is evaluated using multiple customer-level indicators:
+
+Delivery-delay rate
+
+Severe-delay exposure
+
+Delayed-sales exposure
+
+Order volume
+
+#### Customers are grouped into:
+
+Critical Customer Risk
+High Customer Risk
+Moderate Customer Risk
+Lower Customer Risk
+
+## Key Finding
+
+Only 6.69% of customers are classified as Critical or High Customer Risk, but these groups account for approximately:
+
+$1.70M in delayed-sales exposure
+
+This indicates that a relatively small group of customers deserves focused service-recovery and retention efforts.
+
+## Results
+
+The project generates customer-value, churn, delivery-performance, and customer-risk insights.
+
+The main result categories include:
+
+### Customer Value Results
+
+RFM customer scores
+RFM customer segments
+High-value customer groups
+Repeat versus one-time customer analysis
+Customer monetary-value distribution
+Customer purchase-frequency distribution
+Customer recency distribution
+
+### Churn Results
+
+Active customer population
+Churned customer population
+Churn rate by RFM segment
+High-value churned customers
+Active customers approaching churn
+Retention-priority customer groups
+
+### Delivery Performance Results
+
+Late-delivery rate
+Cancellation rate
+Average delivery delay
+Maximum delivery delay
+Delivery-delay exposure groups
+Customer-level supply-chain metrics
+
+### Customer-Risk Results
+
+Customer value versus delay segmentation
+High Value / High Delay priority pool
+Top high-risk customers
+Customer-risk categories
+Delayed-sales exposure by customer-risk category
+
+## Key Technical Contribution
+
+The main technical contribution of this project is the integration of customer analytics and supply-chain performance into one PostgreSQL workflow.
+
+The project transforms operational transaction data into a structured customer-intelligence process:
+
+```text
+Raw Transaction and Shipping Data
+                ↓
+Relational Data Modelling
+                ↓
+Data Quality Validation
+                ↓
+Customer-Order Analysis Base
+                ↓
+RFM Segmentation
+                ↓
+Delivery and Cancellation Metrics
+                ↓
+Churn Classification
+                ↓
+Retention Priority Analysis
+                ↓
+Customer-Risk Prioritisation
+                ↓
 Business Recommendations
+```
+This demonstrates the practical use of SQL for both customer analytics and operational decision support.
 
-Prioritise high-value customers with recurring delivery delays for proactive customer support and service recovery.
+Technologies and Skills Demonstrated
 
-Target active customers nearing the churn threshold with relevant retention offers and follow-up communication.
+PostgreSQL
 
-Investigate fulfilment bottlenecks in customer groups or locations with high delayed-sales exposure.
+SQL
 
-Use customer-risk categories to focus limited operations and customer-support capacity.
+Relational database design
 
-Measure delivery reliability alongside sales value to avoid losing valuable customers because of service failures.
+Data normalisation
 
-Repository Structure
+Data quality validation
 
+Primary-key and foreign-key validation
+
+SQL joins
+
+Common Table Expressions
+
+Views
+
+Aggregations
+
+Conditional logic using CASE
+
+Window functions
+
+Percentile calculations
+
+RFM segmentation
+
+Customer segmentation
+
+Churn analysis
+
+Retention analysis
+
+Delivery-performance analysis
+
+Supply-chain analytics
+
+Customer-risk analysis
+
+Business insight generation
+
+GitHub Desktop
+
+Data privacy and responsible data handling
+
+## Repository Structure
+```text
 ecommerce-customer-intelligence/
+│
 ├── README.md
 ├── .gitignore
+│
 ├── data/
 │   ├── derived/
 │   │   └── README.md
 │   └── sample/
 │       └── README.md
+│
 ├── docs/
 │   ├── methodology.md
 │   └── data_privacy.md
+│
 ├── sql/
 │   ├── 02_data_validation_and_preparation.sql
 │   ├── 03_customer_order_base.sql
 │   ├── 04_valid_customer_orders.sql
 │   └── 05_rfm_churn_supply_chain_analysis.sql
+│
 └── visuals/
     └── README.md
+```
 
-How to Run the Project
+## Data Privacy
 
-Load the original source data into a local PostgreSQL database.
+This repository includes SQL scripts, project documentation, methodology, and safe aggregate-level findings.
 
-Run the SQL scripts in numerical order.
+The following are intentionally excluded:
 
-Review the data-validation output before proceeding to RFM and churn analysis.
+Raw transaction data
 
-Use the final customer-level analysis view to evaluate customer value, churn, delivery performance, and retention priorities.
+Customer names
 
-The raw source data is intentionally excluded from this repository.
+Customer emails
 
-Data Privacy
+Customer addresses
 
-This repository contains SQL scripts, methodology, documentation, and safe aggregate-level findings only.
+Customer passwords
 
-The following are deliberately excluded:
+Database credentials
 
-Raw transaction datasets
+PostgreSQL backups and dumps
 
-Customer names, emails, addresses, phone numbers, and passwords
+Unreviewed customer-level exports
 
-Database credentials and environment files
+Sensitive or personally identifiable information
 
-PostgreSQL backup files
+For more information, see docs/data_privacy.md.
 
-Unreviewed customer-level result exports
+Future Improvements
 
-See docs/data_privacy.md for the full policy.
+Add final geographic-analysis SQL and visualisations.
 
-Future Enhancements
+Add customer-risk-ranking SQL as a separate reproducible module.
 
-Add geographic delayed-sales analysis and visualisations.
+Add safe aggregated result files to data/derived.
 
-Add customer-risk-ranking SQL and summary outputs.
-
-Add anonymised aggregate results to data/derived.
+Add presentation-ready delivery and churn visualisations.
 
 Build an interactive dashboard for customer-value and delivery-risk monitoring.
 
+Compare customer-risk groups across geography, product categories, and shipping modes.
+
+Automate the complete pipeline for scheduled customer-risk reporting.
+
+## Skills Demonstrated
+
+PostgreSQL • SQL • Data Validation • Relational Database Design • Customer Analytics • RFM Segmentation • Churn Analysis • Retention Analysis • Delivery Performance • Supply-Chain Analytics • Customer Segmentation • Customer-Risk Prioritisation • Business Analytics • GitHub Desktop
+
 <div align="center">
 
-Your NameAspiring Data Analyst · PostgreSQL · Customer Analytics · Supply-Chain Analytics
+Mandadapu Uttej Srinivasa Rao · Aspiring Data Analyst · PostgreSQL · Customer Analytics · Supply-Chain Analytics
 
 </div>
