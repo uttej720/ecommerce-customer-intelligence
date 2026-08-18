@@ -573,3 +573,14 @@ The following are intentionally excluded:
 
 PostgreSQL • SQL • Data Validation • Relational Database Design • Customer Analytics • RFM Segmentation • Churn Analysis • Retention Analysis • Delivery Performance • Supply-Chain Analytics • Customer Segmentation • Customer-Risk Prioritisation • Business Analytics • GitHub Desktop
 
+# Future Improvements
+
+The following enhancements are planned for the next phase of the project:
+
+- Add final geographic-analysis SQL and visualisations.
+- Add the customer-risk-ranking SQL as a separate reproducible module.
+- Export safe aggregated result files to `data/derived`.
+- Add presentation-ready charts for RFM segments, churn, delivery performance, and customer risk.
+- Build an interactive dashboard for customer-value and delivery-risk monitoring.
+- Compare customer risk across geography, product categories, and shipping modes.
+- Automate the analysis pipeline for periodic customer-risk reporting.
