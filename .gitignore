@@ -1,0 +1,29 @@
+# Raw, private, or unreviewed data
+data/raw/
+data/private/
+*.csv
+!data/sample/*.csv
+!data/derived/*.csv
+
+# PostgreSQL exports and backups
+*.backup
+*.dump
+*.bak
+*.log
+
+# Credentials
+.env
+.env.*
+*.password
+credentials.json
+
+# Local and operating-system files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Temporary files
+*.tmp
+*.temp
+~$*
+
